@@ -1,20 +1,13 @@
 #include <iostream>
 #include <string>
-#include "stack.h"
+#include "checker.h"
 
 using namespace std;
 
 int main()
 {
-    int count = 5;
-
-    Stack<char> tester(2);
-
-    for (int i = 0; i < count; ++i)
-        tester.push('a'+i);
-
-    for (int i = 0; i < count; ++i)
-        cout << tester.pop() << endl;
+    string TEST_STRING = "(((\n))";
+    checker::cycle(TEST_STRING);
 
     return 0;
 }
