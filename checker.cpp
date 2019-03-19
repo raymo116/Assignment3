@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <fstream>
+
 #include "checker.h"
 #include "stack.h"
 
@@ -43,20 +45,18 @@ char checker::compliment(char currentChar)
     return currentChar;
 }
 
-void checker::cycle(string testString)
+bool checker::cycle(ifstream& currentStream)
 {
     int lineNumber = 1;
     int current = -1; // Allows for preincrementing
     Stack<char> mainStack;
     char currentInputChar;
     char tempStackChar;
+    bool error = false;
 
-    while(true)
+    while(currentStream.good() && !error)
     {
-        if(++current >= testString.length())
-            break;
-
-        currentInputChar = testString[current];
+        currentInputChar = currentStream.get();
 
         if(currentInputChar == '\n') lineNumber++;
 
@@ -69,24 +69,42 @@ void checker::cycle(string testString)
             // Checks to make sure there aren't too many closing delimiters
             if(mainStack.isEmpty())
             {
-                cout << "Error #1" << endl; // too many closing
-                break;
-            }
-            // Checks to make sure that there aren't too many opening delimiters
-            else if((current == testString.length()-1)&&(mainStack.top>0))
-            {
-                cout << "Error #3" << endl; // too many opening
-                break;
+                message(EOF, currentInputChar, lineNumber);
+                error=true;
             }
             // Removes from stack if correct closing
-            if(mainStack.peek() == compliment(currentInputChar))
+            else if(mainStack.peek() == compliment(currentInputChar))
                 mainStack.pop();
             // If it's the wrong closing delimiter
             else
             {
-                cout << "Error #2" << endl; // wrong closing delimiter
-                break;
+                message(compliment(mainStack.peek()), currentInputChar, lineNumber); // wrong closing delimiter
+                error=true;
             }
         }
+        // Checks to make sure that there aren't too many opening delimiters
+        else if((currentInputChar == EOF)&&(mainStack.top>(-1)))
+        {
+            message(compliment(mainStack.peek()), currentInputChar, lineNumber); // too many opening
+            error=true;
+        }
     }
+    currentStream.close();
+    if(!error)
+    {
+        cout << "No errors" << endl;
+        return true;
+    }
+    return false;
+}
+
+void checker::message(char charE, char charR, int lineNum)
+{
+    string expected = "EOF";
+    string received = "EOF";
+
+    if(charE!=EOF) expected = charE;
+    if(charR!=EOF) received = charR;
+
+    cout << "Was expecting \"" << expected << "\", received \"" << received << "\" instead. Line " << lineNum << endl;
 }
