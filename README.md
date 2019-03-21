@@ -14,7 +14,7 @@ If they are correct, the program will ask for another file path. If they are not
 the program will throw an error and tell you where the error is
 
 ## Instructions
-- Compile the program
+- Compile the program with the make file, while will be saved as `mRaymond.out`
 - Execute the program and provide a file path to the file as a command line parameter
 - The program will tell you where an error is if it exists
 - If there is no error, the program will ask you if you want to continue or exit.
